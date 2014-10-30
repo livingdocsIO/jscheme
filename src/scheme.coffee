@@ -17,6 +17,8 @@ module.exports = class Scheme
     else
       @addSchema(name, @parseConfigObj(schema, undefined, name))
 
+    this
+
 
   addSchema: (name, schema) ->
     if @validators[name]?
@@ -26,6 +28,8 @@ module.exports = class Scheme
     @validators[name] = (value) =>
       errors = @recursiveValidate(schema, value)
       return if errors.hasErrors() then errors else true
+
+    this
 
 
   # @returns { Boolean } returns if the object is valid or not.
