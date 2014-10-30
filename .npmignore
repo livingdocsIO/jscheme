@@ -1,0 +1,11 @@
+.DS_Store
+libpeerconnection.log
+npm-debug.log
+
+/node_modules
+/.tmp
+/test
+/src
+
+karma.conf.coffee
+Gruntfile.coffee

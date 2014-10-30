@@ -1,0 +1,6 @@
+.DS_Store
+libpeerconnection.log
+npm-debug.log
+
+/node_modules
+/.tmp
