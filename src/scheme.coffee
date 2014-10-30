@@ -13,7 +13,7 @@ module.exports = class Scheme
 
   add: (name, schema) ->
     if type.isFunction(schema)
-      @validators[name] = schema
+      @addValidator(name, schema)
     else
       @addSchema(name, @parseConfigObj(schema, undefined, name))
 
@@ -29,6 +29,11 @@ module.exports = class Scheme
       errors = @recursiveValidate(schema, value)
       return if errors.hasErrors() then errors else true
 
+    this
+
+
+  addValidator: (name, func) ->
+    @validators[name] = func
     this
 
 
