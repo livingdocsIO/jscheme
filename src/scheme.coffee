@@ -41,7 +41,10 @@ module.exports = class Scheme
   validate: (schemaName, obj) ->
     @errors = undefined
     schema = @schemas[schemaName]
-    return ["missing schema #{ schemaName }"] unless schema?
+    unless schema?
+      @errors = new ValidationErrors()
+      @errors.add("missing schema", location: schemaName)
+      return false
     @errors = @recursiveValidate(schema, obj).setRoot(schemaName)
     return not @errors.hasErrors()
 

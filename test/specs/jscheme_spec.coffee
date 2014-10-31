@@ -80,17 +80,31 @@ describe 'jscheme', ->
     describe 'a schema with additional properties', ->
 
       beforeEach ->
-        @schema.add 'missingPropertyMethod',
+        @schema.add 'additionalProperty',
           property: 'string'
           __additionalProperty: -> false
 
 
       it 'records an error with an additional field', ->
-        isValid = @schema.validate 'missingPropertyMethod',
+        isValid = @schema.validate 'additionalProperty',
           property: 'I am a valid entry'
           anotherProperty: true
 
         expect(isValid).to.equal(false)
+        expect(@schema.getErrorMessages()[0])
+        .to.equal('additionalProperty.anotherProperty: additional property check failed')
+
+
+
+    describe 'unknown root schema', ->
+
+      it 'records an error with an unknown schema', ->
+        isValid = @schema.validate 'unknownSchema', {}
+        expect(isValid).to.equal(false)
+        expect(@schema.getErrorMessages()[0])
+        .to.equal('unknownSchema: missing schema')
+
+
 
 
     describe 'a schema with an optional property', ->
