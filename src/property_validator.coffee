@@ -42,10 +42,10 @@ module.exports = class PropertyValidator
     isValid = true
     validators = @scheme.validators
     for name in @validators || []
-      validate = validators[name]
-      return errors.add("missing validator #{ name }", location: @location) unless validate?
+      validator = validators[name]
+      return errors.add("missing validator #{ name }", location: @location) unless validator?
 
-      continue if valid = validate(value) == true
+      continue if valid = validator(value) == true
       errors.add(valid, location: @location, defaultMessage: "#{ name } validator failed")
       isValid = false
 
@@ -59,11 +59,11 @@ module.exports = class PropertyValidator
     return true unless @arrayValidator?
     isValid = true
 
-    validate = @scheme.validators[@arrayValidator]
-    return errors.add("missing validator #{ @arrayValidator }", location: @location) unless validate?
+    validator = @scheme.validators[@arrayValidator]
+    return errors.add("missing validator #{ @arrayValidator }", location: @location) unless validator?
 
     for entry, index in arr || []
-      res = validate(entry)
+      res = validator(entry)
       continue if res == true
       location = "#{ @location }[#{ index }]"
       errors.add(res, location: location, defaultMessage: "#{ @arrayValidator } validator failed")
