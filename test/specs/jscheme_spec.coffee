@@ -133,11 +133,31 @@ describe 'jscheme', ->
         @schema.add 'optionalObj',
           property: 'string'
 
+        @schema.add 'declared',
+          required: 'string, required'
+          optional: 'string'
 
-      it 'validates an empty object', ->
+
+      it 'validates an empty optional object', ->
         isValid = @schema.validate 'optionalObj', {}
+        expect(isValid).to.equal(true)
+
+
+      it 'validates an declared requirement', ->
+        isValid = @schema.validate 'declared',
+          required: 'yep'
 
         expect(isValid).to.equal(true)
+
+
+      it 'validates a missing declared required property', ->
+        isValid = @schema.validate 'declared',
+          optional: 'nope'
+
+        expect(isValid).to.equal(false)
+        expect(@schema.getErrorMessages()[0])
+          .to.equal('declared.required: required property missing')
+
 
 
     describe 'a schema with an optional property', ->

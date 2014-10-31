@@ -30,6 +30,8 @@ module.exports = class PropertyValidator
       term = result[0]
       if term == 'optional'
         @parent.removeRequiredProperty(@property)
+      else if term == 'required'
+        @parent.addRequiredProperty(@property)
       else if term.indexOf('array of ') == 0
         @validators.push('array')
         @arrayValidator = term.slice(9)
