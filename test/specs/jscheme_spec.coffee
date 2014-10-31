@@ -95,7 +95,6 @@ describe 'jscheme', ->
         .to.equal('additionalProperty.anotherProperty: additional property check failed')
 
 
-
     describe 'unknown root schema', ->
 
       it 'records an error with an unknown schema', ->
@@ -103,8 +102,6 @@ describe 'jscheme', ->
         expect(isValid).to.equal(false)
         expect(@schema.getErrorMessages()[0])
         .to.equal('unknownSchema: missing schema')
-
-
 
 
     describe 'a schema with an optional property', ->

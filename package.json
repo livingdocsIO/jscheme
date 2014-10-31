@@ -1,6 +1,6 @@
 {
   "name": "jscheme",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "upfront.io",
   "description": "A small and simple object schema library for the browser and node",
   "keywords": ["schema", "json schema", "object schema", "validation"],

@@ -26,11 +26,12 @@ module.exports = PropertyValidator = (function() {
   termRegex = /\w[\w ]*\w/g;
 
   function PropertyValidator(_arg) {
-    this.inputString = _arg.inputString, this.property = _arg.property, this.schemaName = _arg.schemaName, this.parent = _arg.parent, this.scheme = _arg.scheme;
+    var _ref;
+    this.inputString = _arg.inputString, this.scheme = _arg.scheme, this.property = _arg.property, this.parent = _arg.parent;
     this.validators = [];
     this.location = this.getLocation();
-    if (this.parent != null) {
-      this.parent.addRequiredProperty(this.property);
+    if ((_ref = this.parent) != null) {
+      _ref.addRequiredProperty(this.property);
     }
     this.addValidations(this.inputString);
   }
@@ -50,7 +51,6 @@ module.exports = PropertyValidator = (function() {
     while (result = termRegex.exec(configString)) {
       term = result[0];
       if (term === 'optional') {
-        this.isOptional = true;
         this.parent.removeRequiredProperty(this.property);
       } else if (term.indexOf('array of ') === 0) {
         this.validators.push('array');
@@ -66,19 +66,19 @@ module.exports = PropertyValidator = (function() {
   };
 
   PropertyValidator.prototype.validate = function(value, errors) {
-    var isValid, name, valid, validate, validators, _i, _len, _ref;
+    var isValid, name, valid, validator, validators, _i, _len, _ref;
     isValid = true;
     validators = this.scheme.validators;
     _ref = this.validators || [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       name = _ref[_i];
-      validate = validators[name];
-      if (validate == null) {
+      validator = validators[name];
+      if (validator == null) {
         return errors.add("missing validator " + name, {
           location: this.location
         });
       }
-      if (valid = validate(value) === true) {
+      if (valid = validator(value) === true) {
         continue;
       }
       errors.add(valid, {
@@ -97,13 +97,13 @@ module.exports = PropertyValidator = (function() {
   };
 
   PropertyValidator.prototype.validateArray = function(arr, errors) {
-    var entry, index, isValid, location, res, validate, _i, _len, _ref;
+    var entry, index, isValid, location, res, validator, _i, _len, _ref;
     if (this.arrayValidator == null) {
       return true;
     }
     isValid = true;
-    validate = this.scheme.validators[this.arrayValidator];
-    if (validate == null) {
+    validator = this.scheme.validators[this.arrayValidator];
+    if (validator == null) {
       return errors.add("missing validator " + this.arrayValidator, {
         location: this.location
       });
@@ -111,7 +111,7 @@ module.exports = PropertyValidator = (function() {
     _ref = arr || [];
     for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
       entry = _ref[index];
-      res = validate(entry);
+      res = validator(entry);
       if (res === true) {
         continue;
       }
@@ -170,7 +170,8 @@ module.exports = PropertyValidator = (function() {
   };
 
   PropertyValidator.prototype.removeRequiredProperty = function(key) {
-    return this.requiredProperties[key] = void 0;
+    var _ref;
+    return (_ref = this.requiredProperties) != null ? _ref[key] = void 0 : void 0;
   };
 
   return PropertyValidator;
@@ -202,10 +203,11 @@ module.exports = Scheme = (function() {
 
   Scheme.prototype.add = function(name, schema) {
     if (type.isFunction(schema)) {
-      return this.validators[name] = schema;
+      this.addValidator(name, schema);
     } else {
-      return this.addSchema(name, this.parseConfigObj(schema, void 0, name));
+      this.addSchema(name, this.parseConfigObj(schema, void 0, name));
     }
+    return this;
   };
 
   Scheme.prototype.addSchema = function(name, schema) {
@@ -213,7 +215,7 @@ module.exports = Scheme = (function() {
       throw new Error("A validator is alredy registered under this name: " + name);
     }
     this.schemas[name] = schema;
-    return this.validators[name] = (function(_this) {
+    this.validators[name] = (function(_this) {
       return function(value) {
         var errors;
         errors = _this.recursiveValidate(schema, value);
@@ -224,6 +226,12 @@ module.exports = Scheme = (function() {
         }
       };
     })(this);
+    return this;
+  };
+
+  Scheme.prototype.addValidator = function(name, func) {
+    this.validators[name] = func;
+    return this;
   };
 
   Scheme.prototype.validate = function(schemaName, obj) {
@@ -231,7 +239,11 @@ module.exports = Scheme = (function() {
     this.errors = void 0;
     schema = this.schemas[schemaName];
     if (schema == null) {
-      return ["missing schema " + schemaName];
+      this.errors = new ValidationErrors();
+      this.errors.add("missing schema", {
+        location: schemaName
+      });
+      return false;
     }
     this.errors = this.recursiveValidate(schema, obj).setRoot(schemaName);
     return !this.errors.hasErrors();
@@ -267,12 +279,11 @@ module.exports = Scheme = (function() {
     return errors;
   };
 
-  Scheme.prototype.parseConfigObj = function(obj, parentValidator, schemaName) {
+  Scheme.prototype.parseConfigObj = function(obj, parentValidator) {
     var key, propValidator, value;
     if (parentValidator == null) {
       parentValidator = new PropertyValidator({
         inputString: 'object',
-        schemaName: schemaName,
         scheme: this
       });
     }
