@@ -76,8 +76,8 @@ module.exports = class Scheme
     errors
 
 
-  parseConfigObj: (obj, parentValidator, schemaName) ->
-    parentValidator ?= new PropertyValidator(inputString: 'object', schemaName: schemaName, scheme: this)
+  parseConfigObj: (obj, parentValidator) ->
+    parentValidator ?= new PropertyValidator(inputString: 'object', scheme: this)
 
     for key, value of obj
       continue if @addParentValidator(parentValidator, key, value)

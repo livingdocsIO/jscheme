@@ -4,7 +4,12 @@
 module.exports = class PropertyValidator
   termRegex = /\w[\w ]*\w/g
 
-  constructor: ({ @inputString, @property, @schemaName, @parent, @scheme }) ->
+  # @params
+  #  - inputString { String } Validation String. E.g. 'string, optional'
+  #  - scheme { Scheme }
+  #  - property { String} Optional. Name of the property this validator is defined upon.
+  #  - parent { PropertyValidator } Optional.
+  constructor: ({ @inputString, @scheme, @property, @parent }) ->
     @validators = []
     @location = @getLocation()
     @parent?.addRequiredProperty(@property)
