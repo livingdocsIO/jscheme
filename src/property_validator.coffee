@@ -7,7 +7,7 @@ module.exports = class PropertyValidator
   constructor: ({ @inputString, @property, @schemaName, @parent, @scheme }) ->
     @validators = []
     @location = @getLocation()
-    @parent.addRequiredProperty(@property) if @parent?
+    @parent?.addRequiredProperty(@property)
     @addValidations(@inputString)
 
 
