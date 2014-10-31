@@ -25,6 +25,10 @@ module.exports = class PropertyValidator
       @scheme.writeProperty(@property)
 
 
+  getPropLocation: (key) ->
+    "#{ @location }#{ @scheme.writeProperty(key) }"
+
+
   addValidations: (configString) ->
     while result = termRegex.exec(configString)
       term = result[0]
@@ -84,16 +88,16 @@ module.exports = class PropertyValidator
       return true if isValid = @otherPropertyValidator.call(this, key, value)
 
       if @scheme.errors?
-        errors.join(@scheme.errors, location: "#{ @location }#{ @scheme.writeProperty(key) }")
+        errors.join(@scheme.errors, location: @getPropLocation(key))
       else
-        errors.add("additional property check failed", location: "#{ @location }#{ @scheme.writeProperty(key) }")
+        errors.add("additional property check failed", location: @getPropLocation(key))
 
       false
     else
       if @scheme.allowAdditionalProperties
         true
       else
-        errors.add("unspecified additional property", location: "#{ @location }#{ @scheme.writeProperty(key) }")
+        errors.add("unspecified additional property", location: @getPropLocation(key))
         false
 
 
@@ -101,7 +105,7 @@ module.exports = class PropertyValidator
     isValid = true
     for key, isRequired of @requiredProperties
       if not obj[key]? && isRequired
-        errors.add("required property missing", location: "#{ @location }#{ @scheme.writeProperty(key) }")
+        errors.add("required property missing", location: @getPropLocation(key))
         isValid = false
 
     isValid
