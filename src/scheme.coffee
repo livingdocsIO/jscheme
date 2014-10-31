@@ -9,6 +9,7 @@ module.exports = class Scheme
   constructor: ->
     @validators = Object.create(validators)
     @schemas = {}
+    @namedPropertiesRequired = true
 
 
   add: (name, schema) ->
