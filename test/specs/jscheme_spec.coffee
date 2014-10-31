@@ -124,11 +124,11 @@ describe 'jscheme', ->
         .to.equal('rigidObj.anotherProperty: unspecified additional property')
 
 
-    describe 'configure(namedPropertiesRequired: false)', ->
+    describe 'configure(propertiesRequired: false)', ->
 
       beforeEach ->
         @schema.configure
-          namedPropertiesRequired: false
+          propertiesRequired: false
 
         @schema.add 'optionalObj',
           property: 'string'
