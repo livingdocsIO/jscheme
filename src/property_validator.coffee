@@ -77,16 +77,22 @@ module.exports = class PropertyValidator
 
 
   validateOtherProperty: (key, value, errors) ->
-    return true unless @otherPropertyValidator?
-    @scheme.errors = undefined
-    return true if isValid = @otherPropertyValidator.call(this, key, value)
+    if @otherPropertyValidator?
+      @scheme.errors = undefined
+      return true if isValid = @otherPropertyValidator.call(this, key, value)
 
-    if @scheme.errors?
-      errors.join(@scheme.errors, location: "#{ @location }#{ @scheme.writeProperty(key) }")
+      if @scheme.errors?
+        errors.join(@scheme.errors, location: "#{ @location }#{ @scheme.writeProperty(key) }")
+      else
+        errors.add("additional property check failed", location: "#{ @location }#{ @scheme.writeProperty(key) }")
+
+      false
     else
-      errors.add("additional property check failed", location: "#{ @location }#{ @scheme.writeProperty(key) }")
-
-    false
+      if @scheme.allowAdditionalProperties
+        true
+      else
+        errors.add("unspecified additional property", location: "#{ @location }#{ @scheme.writeProperty(key) }")
+        false
 
 
   validateRequiredProperties: (obj, errors) ->
