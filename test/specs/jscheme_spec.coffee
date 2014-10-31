@@ -124,6 +124,22 @@ describe 'jscheme', ->
         .to.equal('rigidObj.anotherProperty: unspecified additional property')
 
 
+    describe 'configure(namedPropertiesRequired: false)', ->
+
+      beforeEach ->
+        @schema.configure
+          namedPropertiesRequired: false
+
+        @schema.add 'optionalObj',
+          property: 'string'
+
+
+      it 'validates an empty object', ->
+        isValid = @schema.validate 'optionalObj', {}
+
+        expect(isValid).to.equal(true)
+
+
     describe 'a schema with an optional property', ->
 
       beforeEach ->
