@@ -24,7 +24,6 @@ module.exports = class PropertyValidator
     while result = termRegex.exec(configString)
       term = result[0]
       if term == 'optional'
-        @isOptional = true
         @parent.removeRequiredProperty(@property)
       else if term.indexOf('array of ') == 0
         @validators.push('array')
