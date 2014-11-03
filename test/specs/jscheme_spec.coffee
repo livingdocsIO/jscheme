@@ -104,6 +104,62 @@ describe 'jscheme', ->
         .to.equal('unknownSchema: missing schema')
 
 
+    describe 'configure(allowAdditionalProperties: false)', ->
+
+      beforeEach ->
+        @schema.configure
+          allowAdditionalProperties: false
+
+        @schema.add 'rigidObj',
+          property: 'string'
+
+
+      it 'records an error with an additional field', ->
+        isValid = @schema.validate 'rigidObj',
+          property: 'sure thing'
+          anotherProperty: true
+
+        expect(isValid).to.equal(false)
+        expect(@schema.getErrorMessages()[0])
+        .to.equal('rigidObj.anotherProperty: unspecified additional property')
+
+
+    describe 'configure(propertiesRequired: false)', ->
+
+      beforeEach ->
+        @schema.configure
+          propertiesRequired: false
+
+        @schema.add 'optionalObj',
+          property: 'string'
+
+        @schema.add 'declared',
+          required: 'string, required'
+          optional: 'string'
+
+
+      it 'validates an empty optional object', ->
+        isValid = @schema.validate 'optionalObj', {}
+        expect(isValid).to.equal(true)
+
+
+      it 'validates an declared requirement', ->
+        isValid = @schema.validate 'declared',
+          required: 'yep'
+
+        expect(isValid).to.equal(true)
+
+
+      it 'validates a missing declared required property', ->
+        isValid = @schema.validate 'declared',
+          optional: 'nope'
+
+        expect(isValid).to.equal(false)
+        expect(@schema.getErrorMessages()[0])
+          .to.equal('declared.required: required property missing')
+
+
+
     describe 'a schema with an optional property', ->
 
       beforeEach ->
@@ -277,7 +333,8 @@ describe 'jscheme', ->
           ]
 
         expect(isValid).to.equal(false)
-        expect(@schema.getErrorMessages()[0]).to.equal('templates.templates[0].name: required property missing')
+        expect(@schema.getErrorMessages()[0])
+        .to.equal('templates.templates[0].name: required property missing')
 
 
     describe 'a schema with password confirmation', ->
@@ -306,7 +363,8 @@ describe 'jscheme', ->
           passwordConfirmation: '1235'
 
         expect(isValid).to.equal(false)
-        expect(@schema.getErrorMessages()[0]).to.equal('password: confirmPassword validator failed')
+        expect(@schema.getErrorMessages()[0])
+        .to.equal('password: confirmPassword validator failed')
 
 
     describe 'a schema with a custom validator in a nested object', ->
@@ -337,7 +395,8 @@ describe 'jscheme', ->
             phone: 'no number here'
 
         expect(isValid).to.equal(false)
-        expect(@schema.getErrorMessages()[0]).to.equal('account.person.phone: phone validator failed')
+        expect(@schema.getErrorMessages()[0])
+        .to.equal('account.person.phone: phone validator failed')
 
 
     describe 'a schema wich calls validate', ->
@@ -370,5 +429,6 @@ describe 'jscheme', ->
 
         expect(isValid).to.equal(false)
         expect(@schema.getErrorMessages().length).to.equal(1)
-        expect(@schema.getErrorMessages()[0]).to.equal("obj.persons['1'].place: required property missing")
+        expect(@schema.getErrorMessages()[0])
+        .to.equal("obj.persons['1'].place: required property missing")
 

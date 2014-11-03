@@ -12,7 +12,7 @@ module.exports = class PropertyValidator
   constructor: ({ @inputString, @scheme, @property, @parent }) ->
     @validators = []
     @location = @getLocation()
-    @parent?.addRequiredProperty(@property)
+    @parent?.addRequiredProperty(@property) if @scheme.propertiesRequired
     @addValidations(@inputString)
 
 
@@ -30,6 +30,8 @@ module.exports = class PropertyValidator
       term = result[0]
       if term == 'optional'
         @parent.removeRequiredProperty(@property)
+      else if term == 'required'
+        @parent.addRequiredProperty(@property)
       else if term.indexOf('array of ') == 0
         @validators.push('array')
         @arrayValidator = term.slice(9)
@@ -77,16 +79,22 @@ module.exports = class PropertyValidator
 
 
   validateOtherProperty: (key, value, errors) ->
-    return true unless @otherPropertyValidator?
-    @scheme.errors = undefined
-    return true if isValid = @otherPropertyValidator.call(this, key, value)
+    if @otherPropertyValidator?
+      @scheme.errors = undefined
+      return true if isValid = @otherPropertyValidator.call(this, key, value)
 
-    if @scheme.errors?
-      errors.join(@scheme.errors, location: "#{ @location }#{ @scheme.writeProperty(key) }")
+      if @scheme.errors?
+        errors.join(@scheme.errors, location: "#{ @location }#{ @scheme.writeProperty(key) }")
+      else
+        errors.add("additional property check failed", location: "#{ @location }#{ @scheme.writeProperty(key) }")
+
+      false
     else
-      errors.add("additional property check failed", location: "#{ @location }#{ @scheme.writeProperty(key) }")
-
-    false
+      if @scheme.allowAdditionalProperties
+        true
+      else
+        errors.add("unspecified additional property", location: "#{ @location }#{ @scheme.writeProperty(key) }")
+        false
 
 
   validateRequiredProperties: (obj, errors) ->

@@ -54,7 +54,9 @@ For your convenience there are a few predefined validators:
  - `array of {{ validator }}`  
    E.g. 'array of string'
  - `optional`  
-   By default all propoerties you specify are required. With this no more.
+   By default all propoerties you specify are required. With this you can mark one as optional.
+ - `required`  
+   If you set the configuration `propertiesRequired` to `false` you can use this validator to mark a property as required.
 
 
 #### Special Properties
@@ -115,6 +117,22 @@ jScheme.add('your validator', function(value) {
     return true || false
 });
 ```
+
+### Configuration
+
+```javascript
+jScheme.configure({ 
+  allowAdditionalProperties: true
+  propertiesRequired: true
+});
+```
+
+**allowAdditionalProperties (default: true)**  
+Objects are allowed to have other properties than the ones specified.
+
+**propertiesRequired (default: true)**  
+The properties added in the schemas are required by default. If you want to make a property optional you can use the validator `optional`. If this configuration is set to false all properties will be optional by default and you can mark them as required with the validatior `required`.
+
 
 ## License
 
