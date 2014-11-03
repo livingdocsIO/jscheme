@@ -1,6 +1,6 @@
 {
   "name": "jscheme",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "https://github.com/upfrontIO/jscheme",
   "description": "A small and simple object schema library for the browser and node",
   "author": "upfront.io",
