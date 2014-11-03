@@ -30,8 +30,10 @@ module.exports = PropertyValidator = (function() {
     this.inputString = _arg.inputString, this.scheme = _arg.scheme, this.property = _arg.property, this.parent = _arg.parent;
     this.validators = [];
     this.location = this.getLocation();
-    if ((_ref = this.parent) != null) {
-      _ref.addRequiredProperty(this.property);
+    if (this.scheme.propertiesRequired) {
+      if ((_ref = this.parent) != null) {
+        _ref.addRequiredProperty(this.property);
+      }
     }
     this.addValidations(this.inputString);
   }
@@ -46,12 +48,18 @@ module.exports = PropertyValidator = (function() {
     }
   };
 
+  PropertyValidator.prototype.getPropLocation = function(key) {
+    return "" + this.location + (this.scheme.writeProperty(key));
+  };
+
   PropertyValidator.prototype.addValidations = function(configString) {
     var result, term, types;
     while (result = termRegex.exec(configString)) {
       term = result[0];
       if (term === 'optional') {
         this.parent.removeRequiredProperty(this.property);
+      } else if (term === 'required') {
+        this.parent.addRequiredProperty(this.property);
       } else if (term.indexOf('array of ') === 0) {
         this.validators.push('array');
         this.arrayValidator = term.slice(9);
@@ -68,6 +76,9 @@ module.exports = PropertyValidator = (function() {
   PropertyValidator.prototype.validate = function(value, errors) {
     var isValid, name, valid, validator, validators, _i, _len, _ref;
     isValid = true;
+    if ((value == null) && this.isOptional()) {
+      return isValid;
+    }
     validators = this.scheme.validators;
     _ref = this.validators || [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -127,23 +138,31 @@ module.exports = PropertyValidator = (function() {
 
   PropertyValidator.prototype.validateOtherProperty = function(key, value, errors) {
     var isValid;
-    if (this.otherPropertyValidator == null) {
-      return true;
-    }
-    this.scheme.errors = void 0;
-    if (isValid = this.otherPropertyValidator.call(this, key, value)) {
-      return true;
-    }
-    if (this.scheme.errors != null) {
-      errors.join(this.scheme.errors, {
-        location: "" + this.location + (this.scheme.writeProperty(key))
-      });
+    if (this.otherPropertyValidator != null) {
+      this.scheme.errors = void 0;
+      if (isValid = this.otherPropertyValidator.call(this, key, value)) {
+        return true;
+      }
+      if (this.scheme.errors != null) {
+        errors.join(this.scheme.errors, {
+          location: this.getPropLocation(key)
+        });
+      } else {
+        errors.add("additional property check failed", {
+          location: this.getPropLocation(key)
+        });
+      }
+      return false;
     } else {
-      errors.add("additional property check failed", {
-        location: "" + this.location + (this.scheme.writeProperty(key))
-      });
+      if (this.scheme.allowAdditionalProperties) {
+        return true;
+      } else {
+        errors.add("unspecified additional property", {
+          location: this.getPropLocation(key)
+        });
+        return false;
+      }
     }
-    return false;
   };
 
   PropertyValidator.prototype.validateRequiredProperties = function(obj, errors) {
@@ -154,7 +173,7 @@ module.exports = PropertyValidator = (function() {
       isRequired = _ref[key];
       if ((obj[key] == null) && isRequired) {
         errors.add("required property missing", {
-          location: "" + this.location + (this.scheme.writeProperty(key))
+          location: this.getPropLocation(key)
         });
         isValid = false;
       }
@@ -172,6 +191,12 @@ module.exports = PropertyValidator = (function() {
   PropertyValidator.prototype.removeRequiredProperty = function(key) {
     var _ref;
     return (_ref = this.requiredProperties) != null ? _ref[key] = void 0 : void 0;
+  };
+
+  PropertyValidator.prototype.isOptional = function() {
+    if (this.parent != null) {
+      return !this.parent.requiredProperties[this.property] === true;
+    }
   };
 
   return PropertyValidator;
@@ -199,7 +224,13 @@ module.exports = Scheme = (function() {
   function Scheme() {
     this.validators = Object.create(validators);
     this.schemas = {};
+    this.propertiesRequired = true;
+    this.allowAdditionalProperties = true;
   }
+
+  Scheme.prototype.configure = function(_arg) {
+    this.propertiesRequired = _arg.propertiesRequired, this.allowAdditionalProperties = _arg.allowAdditionalProperties;
+  };
 
   Scheme.prototype.add = function(name, schema) {
     if (type.isFunction(schema)) {
