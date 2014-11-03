@@ -3,7 +3,12 @@
   "version": "0.2.0",
   "author": "upfront.io",
   "description": "A small and simple object schema library for the browser and node",
-  "keywords": ["schema", "json schema", "object schema", "validation"],
+  "keywords": [
+    "schema",
+    "json schema",
+    "object schema",
+    "validation"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -26,6 +31,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-karma": "^0.9.0",
     "grunt-mocha-test": "^0.12.2",
+    "grunt-shell": "^1.1.1",
     "karma": "^0.12.24",
     "karma-chrome-launcher": "^0.1.5",
     "karma-coffee-preprocessor": "^0.2.1",

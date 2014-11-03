@@ -88,6 +88,10 @@ module.exports = (grunt) ->
         pushTo: 'origin'
         push: true
 
+    shell:
+      npm:
+        command: 'npm publish'
+
 
   # Tasks
   # -----
@@ -127,6 +131,7 @@ module.exports = (grunt) ->
     type ?= 'patch'
     grunt.task.run('build')
     grunt.task.run('bump:' + type)
+    grunt.task.run('shell:npm')
 
 
   grunt.registerTask('default', ['dev'])
