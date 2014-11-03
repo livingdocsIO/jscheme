@@ -150,14 +150,21 @@ describe 'jscheme', ->
         expect(isValid).to.equal(true)
 
 
-      it 'validates a missing declared required property', ->
+      it 'validates an optional value that is set to "null"', ->
+        isValid = @schema.validate 'declared',
+          required: 'yep'
+          optional: null
+
+        expect(isValid).to.equal(true)
+
+
+      it 'records a missing declared required property', ->
         isValid = @schema.validate 'declared',
           optional: 'nope'
 
         expect(isValid).to.equal(false)
         expect(@schema.getErrorMessages()[0])
           .to.equal('declared.required: required property missing')
-
 
 
     describe 'a schema with an optional property', ->
@@ -167,11 +174,21 @@ describe 'jscheme', ->
           id: 'string'
           name: 'string, optional'
 
+
       it 'validates a missing optional field', ->
         isValid = @schema.validate 'optionalProperty',
           id: 'AAA'
 
         expect(isValid).to.equal(true)
+
+
+      it 'validates an optional field that is set to "undefined"', ->
+        isValid = @schema.validate 'optionalProperty',
+          id: 'AAA'
+          name: undefined
+
+        expect(isValid).to.equal(true)
+
 
 
     describe 'a schema with two levels', ->

@@ -50,6 +50,8 @@ module.exports = class PropertyValidator
 
   validate: (value, errors) ->
     isValid = true
+    return isValid if not value? && @isOptional()
+
     validators = @scheme.validators
     for name in @validators || []
       validator = validators[name]
@@ -118,4 +120,11 @@ module.exports = class PropertyValidator
 
   removeRequiredProperty: (key) ->
     @requiredProperties?[key] = undefined
+
+
+  # A property is only considered optional if it has a parent.
+  # Root objects can not be optional.
+  isOptional: ->
+    not @parent.requiredProperties[@property] == true if @parent?
+
 
