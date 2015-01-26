@@ -384,6 +384,38 @@ describe 'jscheme', ->
         .to.equal('password: confirmPassword validator failed')
 
 
+    describe 'custom error message for a validator', ->
+
+      beforeEach ->
+        @schema.add 'errorMessage', (obj) ->
+          'custom error message'
+
+        @schema.add 'obj',
+          param: 'errorMessage'
+
+
+      it 'returns the custom error message', ->
+        isValid = @schema.validate('obj', param: 'something')
+        expect(isValid).to.equal(false)
+        expect(@schema.getErrorMessages()[0]).to.equal('obj.param: custom error message')
+
+
+    describe 'validator which returns undefined', ->
+
+      beforeEach ->
+        @schema.add 'incorrectValidator', (obj) ->
+          undefined
+
+        @schema.add 'obj',
+          param: 'incorrectValidator'
+
+
+      it 'returns a specific error message', ->
+        isValid = @schema.validate('obj', param: 'something')
+        expect(isValid).to.equal(false)
+        expect(@schema.getErrorMessages()[0]).to.equal('obj.param: validator returned undefined. Check your validator implementation.')
+
+
     describe 'a schema with a custom validator in a nested object', ->
 
       beforeEach ->
