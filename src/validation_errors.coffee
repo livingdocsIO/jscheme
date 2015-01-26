@@ -14,6 +14,9 @@ module.exports = class ValidationErrors
   # Add an error message
   add: (message, { location, defaultMessage }={} ) ->
     message = defaultMessage if message == false
+    if message == undefined
+      message = "validator returned undefined. Check your validator implementation."
+
     @errors ?= []
     if type.isString(message)
       @errors.push
