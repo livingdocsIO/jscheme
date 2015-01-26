@@ -74,7 +74,7 @@ module.exports = PropertyValidator = (function() {
   };
 
   PropertyValidator.prototype.validate = function(value, errors) {
-    var isValid, name, valid, validator, validators, _i, _len, _ref;
+    var isValid, name, validationResult, validator, validators, _i, _len, _ref;
     isValid = true;
     if ((value == null) && this.isOptional()) {
       return isValid;
@@ -89,10 +89,11 @@ module.exports = PropertyValidator = (function() {
           location: this.location
         });
       }
-      if (valid = validator(value) === true) {
+      validationResult = validator(value);
+      if (validationResult === true) {
         continue;
       }
-      errors.add(valid, {
+      errors.add(validationResult, {
         location: this.location,
         defaultMessage: "" + name + " validator failed"
       });
@@ -108,7 +109,7 @@ module.exports = PropertyValidator = (function() {
   };
 
   PropertyValidator.prototype.validateArray = function(arr, errors) {
-    var entry, index, isValid, location, res, validator, _i, _len, _ref;
+    var entry, index, isValid, location, validationResult, validator, _i, _len, _ref;
     if (this.arrayValidator == null) {
       return true;
     }
@@ -122,12 +123,12 @@ module.exports = PropertyValidator = (function() {
     _ref = arr || [];
     for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
       entry = _ref[index];
-      res = validator(entry);
-      if (res === true) {
+      validationResult = validator(entry);
+      if (validationResult === true) {
         continue;
       }
       location = "" + this.location + "[" + index + "]";
-      errors.add(res, {
+      errors.add(validationResult, {
         location: location,
         defaultMessage: "" + this.arrayValidator + " validator failed"
       });
@@ -427,6 +428,9 @@ module.exports = ValidationErrors = (function() {
     _ref = _arg != null ? _arg : {}, location = _ref.location, defaultMessage = _ref.defaultMessage;
     if (message === false) {
       message = defaultMessage;
+    }
+    if (message === void 0) {
+      message = "validator returned undefined. Check your validator implementation.";
     }
     if (this.errors == null) {
       this.errors = [];
