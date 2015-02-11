@@ -83,7 +83,7 @@ module.exports = (grunt) ->
 
     bump:
       options:
-        files: ['package.json', 'bower.json']
+        files: ['package.json', 'bower.json', 'version.json']
         commitFiles: ['-a'], # '-a' for all files
         pushTo: 'origin'
         push: true
@@ -91,6 +91,22 @@ module.exports = (grunt) ->
     shell:
       npm:
         command: 'npm publish'
+
+    revision:
+      options:
+        property: 'git.revision'
+        ref: 'HEAD'
+        short: true
+
+    replace:
+      revision:
+        options:
+          patterns: [
+            match: /\"revision\": ?\"[a-z0-9]+\"/
+            replacement: '"revision": "<%= git.revision %>"'
+          ]
+        files:
+          'version.json': ['version.json']
 
 
   # Tasks
@@ -112,12 +128,18 @@ module.exports = (grunt) ->
 
   grunt.registerTask('build', [
     'clean'
+    'add-revision'
     'browserify:test'
     'karma:build'
     'mochaTest'
     'coffee:lib'
     'browserify:build'
     'uglify'
+  ])
+
+  grunt.registerTask('add-revision', [
+    'revision'
+    'replace:revision'
   ])
 
   # Release a new version
