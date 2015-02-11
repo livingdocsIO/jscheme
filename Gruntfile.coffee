@@ -126,12 +126,16 @@ module.exports = (grunt) ->
     'mochaTest'
   ])
 
-  grunt.registerTask('build', [
+
+  grunt.registerTask('full-test', [
     'clean'
-    'add-revision'
     'browserify:test'
     'karma:build'
     'mochaTest'
+  ])
+
+  grunt.registerTask('build', [
+    'add-revision'
     'coffee:lib'
     'browserify:build'
     'uglify'
@@ -151,9 +155,14 @@ module.exports = (grunt) ->
   # release:major
   grunt.registerTask 'release', (type) ->
     type ?= 'patch'
-    grunt.task.run('build')
     grunt.task.run('bump:' + type)
+
+    grunt.task.run('full-test')
+    grunt.task.run('bump-only:' + type)
+    grunt.task.run('build')
+    grunt.task.run('bump-commit')
     grunt.task.run('shell:npm')
+
 
 
   grunt.registerTask('default', ['dev'])
