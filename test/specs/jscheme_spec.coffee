@@ -6,6 +6,18 @@ describe 'jscheme', ->
     @schema = jScheme.new()
 
 
+  describe 'version', ->
+
+    it 'exposes the version', ->
+      expect(jScheme.version).to.exist
+      expect(jScheme.version).to.match(/\d+\.\d+\.\d+/)
+
+
+    it 'exposes the revision', ->
+      expect(jScheme.revision).to.exist
+      expect(jScheme.revision).to.match(/[a-z0-9]{7,}/)
+
+
   describe 'add()', ->
 
     it 'adds a schema', ->
