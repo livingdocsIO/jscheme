@@ -45,6 +45,9 @@
     "mocha": "^2.0.1",
     "sinon": "^1.11.1"
   },
+  "scripts": {
+    "test": "grunt node-test"
+  },
   "engines": {
     "node": ">=0.10.0"
   }
