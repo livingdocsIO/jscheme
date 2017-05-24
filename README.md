@@ -54,7 +54,7 @@ For your convenience there are a few predefined validators:
  - `array of {{ validator }}`  
    E.g. 'array of string'
  - `optional`  
-   By default all propoerties you specify are required. With this you can mark one as optional.
+   By default all properties you specify are required. With this you can mark one as optional.
  - `required`  
    If you set the configuration `propertiesRequired` to `false` you can use this validator to mark a property as required.
 
