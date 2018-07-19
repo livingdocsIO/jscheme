@@ -1,7 +1,7 @@
 {
   "name": "jscheme",
   "version": "0.2.1",
-  "author": "upfront.io",
+  "author": "Livingdocs <dev@livingdocs.io>",
   "description": "A small and simple object schema library for the browser and node",
   "keywords": [
     "schema",
@@ -12,10 +12,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/upfrontIO/jscheme.git"
+    "url": "git://github.com/livingdocsIO/jscheme.git"
   },
   "main": "lib/jscheme.js",
-  "homepage": "https://github.com/upfrontIO/jscheme",
+  "homepage": "https://github.com/livingdocsIO/jscheme",
   "devDependencies": {
     "browserify": "^6.2.0",
     "chai": "^1.9.2",
