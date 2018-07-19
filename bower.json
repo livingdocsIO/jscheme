@@ -1,8 +1,8 @@
 {
   "name": "jscheme",
   "version": "0.2.1",
-  "homepage": "https://github.com/upfrontIO/jscheme",
+  "homepage": "https://github.com/livingdocsIO/jscheme",
   "description": "A small and simple object schema library for the browser and node",
-  "author": "upfront.io",
+  "author": "Livingdocs <dev@livingdocs.io>",
   "license": "MIT"
 }
