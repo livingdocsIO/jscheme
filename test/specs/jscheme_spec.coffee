@@ -230,6 +230,23 @@ describe 'jscheme', ->
         expect(isValid).to.equal(false)
 
 
+    describe 'a validator with dashes in its name', ->
+
+      beforeEach ->
+        @schema.add 'validator-with-a-dash', (value) ->
+          value == 'valid'
+
+        @schema.add 'template',
+          test: 'validator-with-a-dash'
+
+
+      it 'the validator is recognized', ->
+        isValid = @schema.validate 'template',
+          test: 'valid'
+
+        expect(isValid).to.equal(true)
+
+
     describe 'a schema with a nested type', ->
 
       beforeEach ->
