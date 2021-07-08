@@ -2,7 +2,7 @@
 # ------------------
 
 module.exports = class PropertyValidator
-  termRegex = /\w[\w ]*\w/g
+  termRegex = /[^, ][^,]*[^, ]/g
 
   # @params
   #  - inputString { String } Validation String. E.g. 'string, optional'
